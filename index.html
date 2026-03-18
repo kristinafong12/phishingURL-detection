@@ -1,4 +1,28 @@
-<script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Phishing URL Detector</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 40px; background-color: #f5f5f5; }
+    h1 { color: #333; }
+    input, button { padding: 10px; font-size: 16px; margin: 5px 0; width: 100%; }
+    #result { margin-top: 20px; font-weight: bold; }
+    .safe { color: green; }
+    .phishing { color: red; }
+  </style>
+</head>
+<body>
+  <h1>Phishing URL Detector</h1>
+  <p>Enter a URL to check if it might be a phishing site:</p>
+  
+  <input type="text" id="urlInput" placeholder="https://example.com">
+  <button onclick="checkURL()">Check URL</button>
+  
+  <div id="result"></div>
+  
+  <script>
   function checkPhishing(url) {
     try {
       const parsed = new URL(url);
