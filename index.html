@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Phishing URL Detector</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 40px; background-color: #f5f5f5; }
+    h1 { color: #333; }
+    input, button { padding: 10px; font-size: 16px; margin: 5px 0; width: 100%; }
+    #result { margin-top: 20px; font-weight: bold; }
+    .safe { color: green; }
+    .phishing { color: red; }
+  </style>
+</head>
+<body>
+  <h1>Phishing URL Detector</h1>
+  <p>Enter a URL to check if it might be a phishing site:</p>
+  
+  <input type="text" id="urlInput" placeholder="https://example.com">
+  <button onclick="checkURL()">Check URL</button>
+  
+  <div id="result"></div>
+
+  <script>
+    function checkURL() {
+      const url = document.getElementById('urlInput').value.trim();
+      const resultDiv = document.getElementById('result');
+
+      if (!url) {
+        resultDiv.textContent = "Please enter a URL.";
+        resultDiv.className = "";
+        return;
+      }
+
+      // Basic frontend-only phishing detection rules
+      const suspiciousPatterns = [
+        /@\w+/,           // URLs with @ symbol
+        /\/\/.*\/.*\/.*/, // Multiple nested slashes
+        /-.*-/,           // Multiple dashes in domain
+        /\d{3,}/          // Numbers in domain
+      ];
+
+      const isPhishing = suspiciousPatterns.some(pattern => pattern.test(url));
+
+      if (isPhishing) {
+        resultDiv.textContent = "❌ WARNING Phishing";
+        resultDiv.className = "phishing";
+      } else {
+        resultDiv.textContent = "😌 Good to go!";
+        resultDiv.className = "safe";
+      }
+    }
+  </script>
+</body>
+</html>
