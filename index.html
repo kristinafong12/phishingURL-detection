@@ -23,24 +23,48 @@
   <div id="result"></div>
 
   <script>
-    function checkURL() {
-      const url = document.getElementById('urlInput').value.trim();
-      const resultDiv = document.getElementById('result');
+    function checkPhishing(url) {
+  try {
+    const parsed = new URL(url);
+    const hostname = parsed.hostname.toLowerCase();
 
-      if (!url) {
-        resultDiv.textContent = "Please enter a URL.";
-        resultDiv.className = "";
-        return;
-      }
+    const suspiciousPatterns = [
+      /@/,                         // @ in URL
+      /(https?:\/\/)?\d+\.\d+/,    // IP address instead of domain
+      /(-.*-.*-)/,                 // too many dashes
+    ];
 
-      // Basic frontend-only phishing detection rules
-      const suspiciousPatterns = [
-        /@\w+/,           // URLs with @ symbol
-        /\/\/.*\/.*\/.*/, // Multiple nested slashes
-        /-.*-/,           // Multiple dashes in domain
-        /\d{3,}/          // Numbers in domain
-      ];
+    const suspiciousTLDs = [
+      ".xyz", ".tk", ".ml", ".ga", ".cf"
+    ];
 
+    const trustedDomains = [
+      "google.com",
+      "paypal.com",
+      "amazon.com",
+      "apple.com",
+      "microsoft.com"
+    ];
+
+    let score = 0;
+
+    // Pattern checks
+    if (suspiciousPatterns.some(p => p.test(url))) score += 2;
+
+    // Too many subdomains
+    if (hostname.split('.').length > 3) score += 2;
+
+    // Suspicious TLD
+    if (suspiciousTLDs.some(tld => hostname.endsWith(tld))) score += 2;
+
+    // Not in trusted list (basic heuristic)
+    if (!trustedDomains.some(d => hostname.endsWith(d))) score += 1;
+
+    return score >= 3;
+  } catch {
+    return true; // invalid URL = suspicious
+  }
+} 
       const isPhishing = suspiciousPatterns.some(pattern => pattern.test(url));
 
       if (isPhishing) {
