@@ -6,4 +6,4 @@ def predict_url(model, url):
     df = pd.DataFrame([features])
 
     prediction = model.predict(df)[0]
-    return "⚠️ Phishing" if prediction == 1 else "✅ Safe"
+    return "❌ WARNING Phishing Site" if prediction == 1 else "😌Good to go!"
