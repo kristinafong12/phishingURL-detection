@@ -1,80 +1,55 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Phishing URL Detector</title>
-  <style>
-    body { font-family: Arial, sans-serif; padding: 40px; background-color: #f5f5f5; }
-    h1 { color: #333; }
-    input, button { padding: 10px; font-size: 16px; margin: 5px 0; width: 100%; }
-    #result { margin-top: 20px; font-weight: bold; }
-    .safe { color: green; }
-    .phishing { color: red; }
-  </style>
-</head>
-<body>
-  <h1>Phishing URL Detector</h1>
-  <p>Enter a URL to check if it might be a phishing site:</p>
-  
-  <input type="text" id="urlInput" placeholder="https://example.com">
-  <button onclick="checkURL()">Check URL</button>
-  
-  <div id="result"></div>
+<script>
+  function checkPhishing(url) {
+    try {
+      const parsed = new URL(url);
+      const hostname = parsed.hostname.toLowerCase();
 
-  <script>
-    function checkPhishing(url) {
-  try {
-    const parsed = new URL(url);
-    const hostname = parsed.hostname.toLowerCase();
+      const suspiciousPatterns = [
+        /@/,                         // @ in URL
+        /(https?:\/\/)?\d+\.\d+/,    // IP address instead of domain
+        /(-.*-.*-)/,                 // too many dashes
+      ];
 
-    const suspiciousPatterns = [
-      /@/,                         // @ in URL
-      /(https?:\/\/)?\d+\.\d+/,    // IP address instead of domain
-      /(-.*-.*-)/,                 // too many dashes
-    ];
+      const suspiciousTLDs = [
+        ".xyz", ".tk", ".ml", ".ga", ".cf"
+      ];
 
-    const suspiciousTLDs = [
-      ".xyz", ".tk", ".ml", ".ga", ".cf"
-    ];
+      const trustedDomains = [
+        "google.com",
+        "paypal.com",
+        "amazon.com",
+        "apple.com",
+        "microsoft.com"
+      ];
 
-    const trustedDomains = [
-      "google.com",
-      "paypal.com",
-      "amazon.com",
-      "apple.com",
-      "microsoft.com"
-    ];
+      let score = 0;
 
-    let score = 0;
+      if (suspiciousPatterns.some(p => p.test(url))) score += 2;
 
-    // Pattern checks
-    if (suspiciousPatterns.some(p => p.test(url))) score += 2;
+      if (hostname.split('.').length > 3) score += 2;
 
-    // Too many subdomains
-    if (hostname.split('.').length > 3) score += 2;
+      if (suspiciousTLDs.some(tld => hostname.endsWith(tld))) score += 2;
 
-    // Suspicious TLD
-    if (suspiciousTLDs.some(tld => hostname.endsWith(tld))) score += 2;
+      if (!trustedDomains.some(d => hostname.endsWith(d))) score += 1;
 
-    // Not in trusted list (basic heuristic)
-    if (!trustedDomains.some(d => hostname.endsWith(d))) score += 1;
-
-    return score >= 3;
-  } catch {
-    return true; // invalid URL = suspicious
-  }
-} 
-      const isPhishing = suspiciousPatterns.some(pattern => pattern.test(url));
-
-      if (isPhishing) {
-        resultDiv.textContent = "❌ WARNING Phishing";
-        resultDiv.className = "phishing";
-      } else {
-        resultDiv.textContent = "😌 Good to go!";
-        resultDiv.className = "safe";
-      }
+      return score >= 3;
+    } catch {
+      return true;
     }
-  </script>
-</body>
-</html>
+  }
+
+  function checkURL() {
+    const url = document.getElementById("urlInput").value;
+    const resultDiv = document.getElementById("result");
+
+    const isPhishing = checkPhishing(url);
+
+    if (isPhishing) {
+      resultDiv.textContent = "❌ WARNING: Possible Phishing Site";
+      resultDiv.className = "phishing";
+    } else {
+      resultDiv.textContent = "😌 Looks Safe!";
+      resultDiv.className = "safe";
+    }
+  }
+</script>
