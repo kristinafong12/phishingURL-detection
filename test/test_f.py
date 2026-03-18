@@ -6,3 +6,4 @@ def test_feature_extraction():
 
     assert features['url_length'] > 0
     assert isinstance(features['has_ip'], int)
+    assert features['suspicious_words'] > 0
