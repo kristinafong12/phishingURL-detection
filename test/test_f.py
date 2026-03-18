@@ -1,4 +1,4 @@
-from src.feature_extraction import extract_features
+from src.features import extract_features
 
 def test_feature_extraction():
     url = "http://example-login.com"
